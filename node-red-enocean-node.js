@@ -1,30 +1,35 @@
 
 'use strict';
 
-var enocean = require("node-enocean")({
-  sensorFilePath:"/knownSensors.json",
-  configFilePath:"/config.json",
-  timeout:30
-  });
-
-
 module.exports = function (RED) {
   // Configuration node
   function EnOceanConfig(n) {
     RED.nodes.createNode(this, n);
-    var self = this;
-    this.config = n;
+
+    this.serialport = n.serialport;
+
+    this.enocean = {};
+
+    var enocean = require("node-enocean")({
+      sensorFilePath: "/knownSensors.json",
+      configFilePath: "/config.json",
+      timeout: 30
+    });
+
+    var node = this;
+    this.enocean = enocean;
+
     try {
-      enocean.listen(this.config.serialport);
+      //timout needed in case of redeploy (serialport could be still open)
+      this.enocean.listen(this.serialport);
     } catch (err) {
       console.log(err);
     }
 
-    enocean.on("error", function (error) {
+    this.enocean.on("error", function (error) {
       console.log(error);
       node.error(error);
     });
-    
 
   };
 
@@ -34,8 +39,10 @@ module.exports = function (RED) {
   function EnOceanListener(n) {
     RED.nodes.createNode(this, n);
 
+    var server = RED.nodes.getNode(n.serialport);
+
     var node = this;
-    enocean.on("ready", function () {
+    server.enocean.on("ready", function () {
       node.status({
         fill: 'green',
         shape: "ring",
@@ -43,7 +50,12 @@ module.exports = function (RED) {
       });
     });
 
-    enocean.on("data", function (data) {
+    node.on('close', function () {
+      console.log("CONNECTION GETS CLOSED"); // <-- no 'done' argument, nothing more is needed
+      server.enocean.close();
+    });
+
+    server.enocean.on("data", function (data) {
       console.log(data);
       var msg = {};
       msg.payload = { data: data };
@@ -55,7 +67,7 @@ module.exports = function (RED) {
       node.send(msg);
     });
 
-    enocean.on("error", function (error) {
+    server.enocean.on("error", function (error) {
       console.log(error);
       node.status({
         fill: 'red',
@@ -65,7 +77,7 @@ module.exports = function (RED) {
       node.error(error);
     });
 
-    enocean.on("close", function () {
+    server.enocean.on("close", function () {
       node.status({
         fill: 'red',
         shape: "ring",
@@ -73,7 +85,7 @@ module.exports = function (RED) {
       });
     });
 
-    enocean.on("disconnect", function () {
+    server.enocean.on("disconnect", function () {
       node.status({
         fill: 'yellow',
         shape: "ring",
