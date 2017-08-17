@@ -46,7 +46,7 @@
     <label for="node-input-knownsensor"
       style="width: 70%;"> Only listen to Known Sensors?</label>
   </div>
-  <div class="form-row">
+  <div class="form-row" id="node-input-devicefilter-row">
     <label for="node-input-devicefilter"><i class="fa fa-filter"></i>  Device filter</label>
     <select id="node-input-devicefilter">
           <option value="none"> None</option>
@@ -162,7 +162,7 @@
       function createNodeList() {
         node.devices = node.devices || [];
 
-        if (node.serialport === undefined || node.serialport === '' || node.port === '_ADD_')
+        if (node.serialport === undefined || node.serialport === '')
           return;
 
         var allChecked = true;
@@ -274,6 +274,18 @@
           $(".node-input-target-row").show();
         } else {
           $("#node-input-status-target-container").empty();
+          $(".node-input-target-row").hide();
+        }
+      });
+
+      $("#node-input-knownsensor").change(function (e) {
+        if (this.checked) {
+          $("#node-input-devicefilter-row").show();
+          // $(".node-input-target-row").show();
+          // $("#node-input-devicefilter").val("none");
+        } else {
+          $("#node-input-status-target-container").empty();
+          $("#node-input-devicefilter-row").hide();
           $(".node-input-target-row").hide();
         }
       });

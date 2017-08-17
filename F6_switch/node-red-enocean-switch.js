@@ -9,7 +9,7 @@ module.exports = function (RED) {
 
   function EnOceanSwitch(n) {
     RED.nodes.createNode(this, n);
-  
+
     this.baseidcount = n.baseidcount;
     // Retrieve the config node
     var server = RED.nodes.getNode(n.serialport);
@@ -24,7 +24,7 @@ module.exports = function (RED) {
     node.on('input', function (msg) {
       // do something with 'msg'
       if (msg.payload === 1) {
-        button.A1.click().then(function() {
+        button.A1.click().then(function () {
           console.log("Button clicked");
         });
       } else {
@@ -57,7 +57,6 @@ module.exports = function (RED) {
     });
 
     node.on('close', function () {
-      console.log("CONNECTION GETS CLOSED"); // <-- no 'done' argument, nothing more is needed
       enocean.close();
     });
 

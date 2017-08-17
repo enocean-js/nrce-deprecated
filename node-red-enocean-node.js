@@ -11,8 +11,8 @@ module.exports = function (RED) {
     this.enocean = {};
 
     var enocean = require("node-enocean")({
-      sensorFilePath: "/knownSensors.json",
-      configFilePath: "/config.json",
+      sensorFilePath: "./knownSensors.json",
+      configFilePath: "./config.json",
       timeout: 30
     });
 
@@ -20,6 +20,7 @@ module.exports = function (RED) {
     this.enocean = enocean;
 
     try {
+      console.log(this.serialport);
       //timout needed in case of redeploy (serialport could be still open)
       this.enocean.listen(this.serialport);
     } catch (err) {
@@ -39,6 +40,10 @@ module.exports = function (RED) {
   function EnOceanListener(n) {
     RED.nodes.createNode(this, n);
 
+    this.knownsensor = n.knownsensor;
+    this.devicefilter = n.devicefilter;
+    this.devices = n.devices;
+
     var server = RED.nodes.getNode(n.serialport);
 
     var node = this;
@@ -56,16 +61,43 @@ module.exports = function (RED) {
     });
 
     server.enocean.on("data", function (data) {
-      console.log(data);
+      //only react to incoming requests which are already learned in
+      if (node.knownsensor) {
+        //we can let all sensors through which are learned in or only selected
+        if (node.devicefilter === "target") {
+          var found = false;
+          if (node.devices.length > 0) {
+            for (var i = 0; i < node.devices.length; i++) {
+              // TODO: compare knownSensors from server.enocean.knownsensors to node.devices which were selected
+              //maybe lodash to be able to quickly filter and check for matches....
+              sendPayload(data);
+            }
+          }
+          // else: all known Sensors are allowed to pass
+        } else {
+          // TODO: check for match
+          sendPayload(data);
+        }
+      } else {
+        sendPayload(data);
+      }
+
+
+    });
+
+    function sendPayload(data) {
       var msg = {};
-      msg.payload = { data: data };
+      msg.payload = { data };
       node.status({
         fill: 'green',
         shape: "ring",
         text: "Data received"
       });
+      console.log(data);
+
       node.send(msg);
-    });
+
+    }
 
     server.enocean.on("error", function (error) {
       console.log(error);
