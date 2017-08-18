@@ -25,10 +25,12 @@ module.exports = function (RED) {
       // do something with 'msg'
       if (msg.payload === 1) {
         button.A1.click().then(function () {
-          console.log("Button clicked");
+          console.log("Button A1 clicked");
         });
       } else {
-        button.A0.click();
+        button.A0.click().then(function () {
+          console.log("Button A0 clicked");
+        });
       }
     });
 
