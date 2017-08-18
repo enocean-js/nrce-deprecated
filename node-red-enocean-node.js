@@ -11,8 +11,8 @@ module.exports = function (RED) {
     this.enocean = {};
 
     var enocean = require("node-enocean")({
-      sensorFilePath: "./knownSensors.json",
-      configFilePath: "./config.json",
+      sensorFilePath: __dirname+"/knownSensors.json",
+      configFilePath: __dirname+"/config.json",
       timeout: 30
     });
 
