@@ -1,4 +1,3 @@
-
 'use strict';
 
 module.exports = function (RED) {
@@ -7,38 +6,49 @@ module.exports = function (RED) {
     RED.nodes.createNode(this, n);
 
     this.serialport = n.serialport;
-
+    this.knownsensorarray = require(__dirname + "/knownSensors.json");
     this.enocean = {};
 
-    var enocean = require("node-enocean")({
-      sensorFilePath: __dirname+"/knownSensors.json",
-      configFilePath: __dirname+"/config.json",
+    this.enocean = require("node-enocean")({
+      sensorFilePath: __dirname + "/knownSensors.json",
+      configFilePath: __dirname + "/config.json",
       timeout: 30
     });
 
+
+
     var node = this;
-    this.enocean = enocean;
+    // this.enocean = enocean;
 
     try {
-      console.log(this.serialport);
-      //timout needed in case of redeploy (serialport could be still open)
-      this.enocean.listen(this.serialport);
+      node.enocean.listen(node.serialport);
     } catch (err) {
       console.log(err);
     }
 
-    this.enocean.on("error", function (error) {
-      console.log(error);
-      node.error(error);
+    node.enocean.on("error", function (error) {
+      //try to reconnect
+      setTimeout(function () {
+        node.enocean.listen(node.serialport);
+      }, 5000);
     });
 
+    node.enocean.on("disconnect", function () {
+      // node.enocean.listen(node.serialport);
+    });
   };
 
   RED.nodes.registerType("enocean-config-node", EnOceanConfig);
 
-
   function EnOceanListener(n) {
     RED.nodes.createNode(this, n);
+    var jsonObject = require(__dirname + "/knownSensors.json");
+    //map to Array:
+    var knownsensorarray = Object.keys(jsonObject).map(function (key) { return jsonObject[key]; });
+
+    RED.httpAdmin.get('/knownsensors', function(req, res) {
+      res.json(knownsensorarray || []);
+    });
 
     this.knownsensor = n.knownsensor;
     this.devicefilter = n.devicefilter;
@@ -56,44 +66,64 @@ module.exports = function (RED) {
     });
 
     node.on('close', function () {
-      console.log("CONNECTION GETS CLOSED"); // <-- no 'done' argument, nothing more is needed
       server.enocean.close();
     });
 
+    node.on('input', function (msg) {
+      // we can trigger a learning function
+      server.enocean.startLearning();
+      server.enocean.on("learned", function (data) {
+        if (msg.payload) {
+          data.title = msg.payload;
+        }
+        node.status({
+          fill: 'green',
+          shape: "ring",
+          text: "Sensor teached in"
+        });
+        sendPayload(data);
+      });
+    });
+
+
     server.enocean.on("data", function (data) {
-      //only react to incoming requests which are already learned in
-      if (node.knownsensor) {
-        //we can let all sensors through which are learned in or only selected
-        if (node.devicefilter === "target") {
-          var found = false;
-          if (node.devices.length > 0) {
-            for (var i = 0; i < node.devices.length; i++) {
-              // TODO: compare knownSensors from server.enocean.knownsensors to node.devices which were selected
-              //maybe lodash to be able to quickly filter and check for matches....
-              sendPayload(data);
+      // DATA ID means we have no teach in telegram
+      if (!data.id) {
+        node.status({
+          fill: 'green',
+          shape: "ring",
+          text: "Data received"
+        });
+        //only react to incoming requests which are already learned in
+        if (node.knownsensor) {
+          //we can let all sensors through which are learned in or only selected
+          if (node.devicefilter === "target") {
+            if (node.devices.length > 0) {
+              for (var i = 0; i < node.devices.length; i++) {
+                if (data.senderId === node.devices[i]) {
+                  sendPayload(data);
+                }
+              }
+            }
+            // else: all known Sensors are allowed to pass
+          } else {
+            for (var k = 0; k < knownsensorarray.length; k++) {
+              if (data.senderId === knownsensorarray[k].id) {
+                sendPayload(data);
+              }
             }
           }
-          // else: all known Sensors are allowed to pass
         } else {
-          // TODO: check for match
           sendPayload(data);
         }
-      } else {
-        sendPayload(data);
       }
-
-
     });
 
     function sendPayload(data) {
       var msg = {};
-      msg.payload = { data };
-      node.status({
-        fill: 'green',
-        shape: "ring",
-        text: "Data received"
-      });
-      console.log(data);
+      msg.payload = {
+        data
+      };
 
       node.send(msg);
 

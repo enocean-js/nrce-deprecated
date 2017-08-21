@@ -59,3 +59,4 @@ typings/
 
 # configuration
 config.json
+knownSensors.json
