@@ -26,11 +26,12 @@ module.exports = function (RED) {
       console.log(err);
     }
 
+    node.on('close', function () {
+      node.enocean.close();
+    });
+
     node.enocean.on("error", function (error) {
-      //try to reconnect
-      setTimeout(function () {
-        node.enocean.listen(node.serialport);
-      }, 5000);
+      console.log(error);
     });
 
     node.enocean.on("disconnect", function () {
