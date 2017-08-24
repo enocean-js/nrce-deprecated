@@ -57,6 +57,3 @@ typings/
 # dotenv environment variables file
 .env
 
-# configuration
-config.json
-knownSensors.json
