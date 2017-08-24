@@ -23,6 +23,20 @@
   </div>
 </script>
 
+<script type="text/x-red" data-help-name="enocean-switch">
+  <h1>Enocean-Switch-Node</h1>
+  <p>This node has basically two functionalities for controlling Enocean lights/shutters:</p>
+  <ul>
+    <li>Turn off actuator (msg.payload: 0)</li>
+    <li>Turn on actuator (msg.payload: 1)</li>
+  </ul>
+  <h2>Sending telegrams to actuator</h2>
+  <p>Specify Serialport. Can be Enocean HAT (/dev/ttyAMA0), Enocean USB Stick (dev/ttyUSBx) or COMx for Windows</p>
+  <p>Send a msg.payload object to this node containing a number: 0 , 1
+  </p>
+  <p>For example flows and further instructions visit: <a href="https://github.com/node-enocean/node-red-contrib-enocean">our Github Repo</a>
+</script>
+
 <script type="text/javascript">
 
   RED.nodes.registerType('enocean-switch', {

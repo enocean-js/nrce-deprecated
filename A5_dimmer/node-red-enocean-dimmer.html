@@ -23,6 +23,21 @@
   </div>
 </script>
 
+<script type="text/x-red" data-help-name="enocean-dimmer">
+  <h1>Enocean-Dimmer-Node</h1>
+  <p>This node has basically three built in functionalities:</p>
+  <ul>
+    <li>Send teach-in telegram (msg.payload: 1)</li>
+    <li>Send specific value (msg.payload: between 10 and 100) to actuator</li>
+    <li>Turn off telegram (msg.payload:  0)</li>
+  </ul>
+  <h2>Sending telegrams to actuator</h2>
+  <p>Specify Serialport. Can be Enocean HAT (/dev/ttyAMA0), Enocean USB Stick (dev/ttyUSBx) or COMx for Windows</p>
+  <p>Send a msg.payload object to this node containing a number: 0 , 1 , or a number bigger as 10.
+  </p>
+  <p>For example flows and further instructions visit: <a href="https://github.com/node-enocean/node-red-contrib-enocean">our Github Repo</a>
+</script>
+
 <script type="text/javascript">
 
   RED.nodes.registerType('enocean-dimmer', {
