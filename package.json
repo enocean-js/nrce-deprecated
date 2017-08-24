@@ -13,5 +13,9 @@
     "node-enocean-button": "^3.0.0",
     "node-enocean-dimmer": "^3.0.0"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/node-enocean/node-red-contrib-enocean.git"
+  },
   "description": "Node-Red nodes for node-enocean library"
 }
