@@ -4,12 +4,14 @@
   "node-red": {
     "nodes": {
       "enocean-listener": "node-red-enocean-node.js",
-      "enocean-switch": "/F6_switch/node-red-enocean-switch.js"
+      "enocean-switch": "/F6_switch/node-red-enocean-switch.js",
+      "enocean-dimmer": "/A5_dimmer/node-red-enocean-dimmer.js"
     }
   },
   "dependencies": {
     "node-enocean": "^3.1.1",
-    "node-enocean-button": "^3.0.0"
+    "node-enocean-button": "^3.0.0",
+    "node-enocean-dimmer": "^3.0.0"
   },
   "description": "Node-Red nodes for node-enocean library"
 }

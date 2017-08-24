@@ -1,0 +1,52 @@
+
+<!-- ###############################################################################################################-->
+
+<script type="text/x-red"
+  data-template-name="enocean-dimmer">
+  <div class="form-row">
+    <label for="node-input-serialport"><i class="fa fa-globe"></i> Serialport</label>
+    <input type="text"
+      id="node-input-serialport">
+  </div>
+  <div class="form-row">
+    <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+    <input type="text"
+      id="node-input-name"
+      placeholder="DimmerName"
+      style="width: 70%;">
+  </div>
+  <div class="form-row">
+    <label>Specify unique number</label>
+    <input type="number"
+      id="node-input-baseidcount"
+      style="width: 70%;">
+  </div>
+</script>
+
+<script type="text/javascript">
+
+  RED.nodes.registerType('enocean-dimmer', {
+    category: 'output',
+    color: "rgb(171, 209, 46)",
+    defaults: {
+      serialport: {
+        value: "",
+        type: "enocean-config-node"
+      },
+      name: {
+        value: ""
+      },
+      baseidcount: {
+        value: 0
+      }
+    },
+    inputs: 1,
+    outputs: 0,
+    icon: "dolphin.png",
+    align: "left",
+    label: function () {
+      return this.name || "Enocean Dimmer";
+    }
+  });
+
+</script>

@@ -86,6 +86,8 @@ module.exports = function (RED) {
       });
     });
 
+    server.enocean.setMaxListeners(Infinity);
+
 
     server.enocean.on("data", function (data) {
       // DATA ID means we have no teach in telegram

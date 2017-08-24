@@ -1,13 +1,10 @@
 
 'use strict';
 
-
-
-
 module.exports = function (RED) {
   // Configuration 
 
-  function EnOceanSwitch(n) {
+  function EnOceanDimmer(n) {
     RED.nodes.createNode(this, n);
 
     this.baseidcount = n.baseidcount;
@@ -16,21 +13,27 @@ module.exports = function (RED) {
 
     var enocean = server.enocean;
 
-    var Button = require("node-enocean-button");
-
+    var Dimmer = require("node-enocean-dimmer");
+    console.log("we reached this");
     var node = this;
-    var button = new Button(enocean, this.baseidcount);
+    var dimmer = new Dimmer(enocean, this.baseidcount);
+
+    enocean.set
 
     node.on('input', function (msg) {
       // do something with 'msg'
-      if (msg.payload === 1) {
-        button.A1.click().then(function () {
-          console.log("Button A1 clicked");
-        });
-      } else {
-        button.A0.click().then(function () {
-          console.log("Button A0 clicked");
-        });
+      dimmer.speed = "80"
+
+      switch( msg.payload ) {
+      case 1:
+        dimmer.teach( );
+      break;
+      case 0:
+        dimmer.off( );
+      break;
+      default:
+        dimmer.setValue( msg.payload );
+      break;
       }
     });
 
@@ -98,6 +101,6 @@ module.exports = function (RED) {
 
   };
 
-  RED.nodes.registerType("enocean-switch", EnOceanSwitch);
+  RED.nodes.registerType("enocean-dimmer", EnOceanDimmer);
 
 };
