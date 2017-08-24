@@ -1,5 +1,5 @@
 {
-  "name": "node-red-enocean-node",
+  "name": "node-red-contrib-enocean",
   "version": "0.0.1",
   "node-red": {
     "nodes": {
