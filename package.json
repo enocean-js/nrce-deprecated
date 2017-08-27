@@ -17,5 +17,14 @@
     "type": "git",
     "url": "git+https://github.com/node-enocean/node-red-contrib-enocean.git"
   },
+  "keywords": [
+    "enocean",
+    "node-red",
+    "telegram",
+    "eep",
+    "iot",
+    "home automation",
+    "internet of things"
+  ],
   "description": "Node-Red nodes for node-enocean library"
 }
