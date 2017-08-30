@@ -3,6 +3,11 @@
 These nodes are based on the node-enocean-library:
 <a href="https://github.com/node-enocean/node-enocean">node-enocean</a>
 
+## Issues
+
+<strong>Beware: This only works with NodeJS > 7.x</strong>
+This is due to the node-enocean library using asynchrounous handlers.
+
 ## To install: 
 
 Install node-red.
